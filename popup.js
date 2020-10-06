@@ -30,8 +30,34 @@ class LocalStorageManager {
     }
 }
 
-class BrowserLocalStorageApiManager extends LocalStorageManager {
 
+/**
+ * Browser local storage manager interactions
+ */
+class BrowserLocalStorageApiManager extends LocalStorageManager {
+    constructor() { super(); }
+
+    /**
+     * @returns {void}
+     */
+    setDarkModeKey() {
+        chrome.tabs.executeScript({
+            code: `
+            window.localStorage.setItem("nadar-dark-browser", "1");
+            `
+        });
+    }
+
+    /**
+    * @returns {void}
+    */
+    removeDarkModeKey() {
+        chrome.tabs.executeScript({
+            code: `
+            window.localStorage.removeItem("nadar-dark-browser");
+            `
+        });
+    }
 }
 
 
@@ -74,25 +100,29 @@ class PageInteractor {
 
 
 // Driver code
-const localStorageManager = new LocalStorageManager();
+const popupLocalStorageManager = new LocalStorageManager();
+const browserStorageManager = new BrowserLocalStorageApiManager();
 const domElements = new DOMElementsRef();
 const pageInteractor = new PageInteractor();
 
+// Switch click event listener
 domElements.$switch.addEventListener('click', (e) => {
-    if (localStorageManager.isDarkModeKeyExistent()) {
-        localStorageManager.removeDarkModeKey();
+    if (popupLocalStorageManager.isDarkModeKeyExistent()) {
+        popupLocalStorageManager.removeDarkModeKey();
+        browserStorageManager.removeDarkModeKey();
         pageInteractor.removePageDarkMode();
         return;
     }
 
     pageInteractor.makePageDarkMode();
-    localStorageManager.setDarkModeKey();
+    popupLocalStorageManager.setDarkModeKey();
+    browserStorageManager.setDarkModeKey();
 });
 
 
 // On load
 window.onload = e => {
-    if (localStorageManager.isDarkModeKeyExistent()) {
+    if (popupLocalStorageManager.isDarkModeKeyExistent()) {
         domElements.$checkbox.checked = true;
         pageInteractor.makePageDarkMode();
     }
