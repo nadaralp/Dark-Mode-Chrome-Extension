@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "Dark Mode Me",
+  "version": "1.0.0",
+  "default_locale": "en",
+  "description": "Get dark mode for every website you visit",
+  "icons": {
+    "128": "icon_128.png"
+  },
+  "content_scripts": [{
+    "matches": ["http://*/*", "https://*/*"],
+    "js": ["content.js"]
+  }],
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "permissions": ["activeTab", "tabs", "cookies", "http://*/*", "https://*/*"]
+}
